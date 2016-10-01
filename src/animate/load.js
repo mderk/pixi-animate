@@ -1,20 +1,21 @@
+// Configure PIXI Loader to handle audio files correctly
+const Resource = PIXI.loaders.Resource;
+Resource.setExtensionLoadType('wav', Resource.LOAD_TYPE.AUDIO);
+Resource.setExtensionLoadType('mp3', Resource.LOAD_TYPE.AUDIO);
+Resource.setExtensionLoadType('ogg', Resource.LOAD_TYPE.AUDIO);
+
 /**
- * @namespace PIXI.animate
- * @class load
- * @description Entry point for loading Adobe Animate exports:
- * 
- * **Load and auto-add to parent**
- * ```
- * let renderer = new PIXI.autoDetectRenderer(1280, 720);
- * let stage = new PIXI.Container();
- * PIXI.animate.load(lib.MyStage, stage);
- * function update() {
- *      renderer.render(stage);
- *      update();
- * }
- * update();
- * ```
- * **Load and handle with callback**
+ * Load the stage class and preload any assets
+ * @method PIXI.animate.load
+ * @param {Object} options Options for loading.
+ * @param {Function} options.stage Reference to the stage class
+ * @param {Object} [options.stage.assets] Assets used to preload
+ * @param {PIXI.Container} options.parent The Container to auto-add the stage to.
+ * @param {String} [options.basePath] Base root directory
+ * @return {PIXI.loaders.Loader} instance of PIXI resource loader
+ */
+/**
+ * Load the stage class and preload any assets
  * ```
  * let renderer = new PIXI.autoDetectRenderer(1280, 720);
  * let stage = new PIXI.Container();
@@ -27,29 +28,29 @@
  * }
  * update();
  * ```
- */
-/**
- * Load the stage class and preload any assets
- * @method load
- * @param {Object} options Options for loading.
- * @param {Function} options.stage Reference to the stage class
- * @param {Object} [options.stage.assets] Assets used to preload
- * @param {PIXI.Container} options.parent The Container to auto-add the stage to.
- * @param {String} [options.basePath] Base root directory
- */
-/**
- * Load the stage class and preload any assets
- * @method load
+ * @method PIXI.animate.load
  * @param {Function} StageRef Reference to the stage class.
  * @param {Object} [StageRef.assets] Assets used to preload.
  * @param {Function} complete The callback function when complete.
+ * @return {PIXI.loaders.Loader} instance of PIXI resource loader
  */
 /**
  * Load the stage class and preload any assets
- * @method load
+ * ```
+ * let renderer = new PIXI.autoDetectRenderer(1280, 720);
+ * let stage = new PIXI.Container();
+ * PIXI.animate.load(lib.MyStage, stage);
+ * function update() {
+ *      renderer.render(stage);
+ *      update();
+ * }
+ * update();
+ * ```
+ * @method PIXI.animate.load
  * @param {Function} StageRef Reference to the stage class.
  * @param {Object} [StageRef.assets] Assets used to preload.
  * @param {PIXI.Container} parent The Container to auto-add the stage to.
+ * @return {PIXI.loaders.Loader} instance of PIXI resource loader
  */
 const load = function(options, parent, complete, basePath) {
 
@@ -81,6 +82,11 @@ const load = function(options, parent, complete, basePath) {
         complete: null
     }, options || {});
 
+    const Resource = PIXI.loaders.Resource;
+    Resource.setExtensionLoadType('wav', Resource.LOAD_TYPE.AUDIO);
+    Resource.setExtensionLoadType('mp3', Resource.LOAD_TYPE.AUDIO);
+    Resource.setExtensionLoadType('ogg', Resource.LOAD_TYPE.AUDIO);
+
     const loader = new PIXI.loaders.Loader();
 
     function done() {
@@ -89,7 +95,7 @@ const load = function(options, parent, complete, basePath) {
             options.parent.addChild(instance);
         }
         if (options.complete) {
-            options.complete(instance);
+            options.complete(instance, loader);
         }
     }
 
@@ -109,6 +115,8 @@ const load = function(options, parent, complete, basePath) {
         // tiny case where there's only text and no shapes/animations
         done();
     }
+
+    return loader;
 };
 
 export default load;
